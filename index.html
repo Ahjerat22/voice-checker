@@ -5,29 +5,34 @@
   <title>Voice Checker</title>
 </head>
 <body>
-<script>
-  const targetPhrase = "i see a red apple";
+  <h2>Say: "I see a red apple"</h2>
+  <button onclick="startListening()">🎤 Start Listening</button>
+  <p id="result">Waiting...</p>
 
-  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-  const recognition = new SpeechRecognition();
-  recognition.lang = "en-US";
-  recognition.interimResults = false;
+  <script>
+    const targetPhrase = "i see a red apple";
 
-  window.startListening = function() {
-    recognition.start();
-  };
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+    recognition.lang = "en-US";
+    recognition.interimResults = false;
 
-  recognition.onresult = function(event) {
-    const spoken = event.results[0][0].transcript.toLowerCase().trim();
-    const isCorrect = spoken === targetPhrase;
-    
-    // Send message to Axure
-    parent.postMessage({ result: isCorrect ? "correct" : "incorrect" }, "*");
-  };
+    window.startListening = function () {
+      document.getElementById("result").innerText = "Listening...";
+      recognition.start();
+    };
 
-  recognition.onerror = function(event) {
-    parent.postMessage({ result: "error", message: event.error }, "*");
-  };
-</script>
+    recognition.onresult = function(event) {
+      const spoken = event.results[0][0].transcript.toLowerCase().trim();
+      const isCorrect = spoken === targetPhrase;
+      document.getElementById("result").innerText = isCorrect ? "✅ Correct!" : "❌ Incorrect!";
+      
+      parent.postMessage({ result: isCorrect ? "correct" : "incorrect" }, "*");
+    };
+
+    recognition.onerror = function(event) {
+      document.getElementById("result").innerText = "Error: " + event.error;
+    };
+  </script>
 </body>
 </html>
