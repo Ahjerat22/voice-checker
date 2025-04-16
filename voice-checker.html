@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Voice Checker</title>
+</head>
+<body>
+<script>
+  const targetPhrase = "i see a red apple";
+
+  const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+  const recognition = new SpeechRecognition();
+  recognition.lang = "en-US";
+  recognition.interimResults = false;
+
+  window.startListening = function() {
+    recognition.start();
+  };
+
+  recognition.onresult = function(event) {
+    const spoken = event.results[0][0].transcript.toLowerCase().trim();
+    const isCorrect = spoken === targetPhrase;
+    
+    // Send message to Axure
+    parent.postMessage({ result: isCorrect ? "correct" : "incorrect" }, "*");
+  };
+
+  recognition.onerror = function(event) {
+    parent.postMessage({ result: "error", message: event.error }, "*");
+  };
+</script>
+</body>
+</html>
